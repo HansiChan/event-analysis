@@ -22,7 +22,6 @@ public class ExcelExportProvider {
     public HSSFWorkbook generateSheet(HSSFWorkbook wb, String sheetName,
                                       List<String> fields, List<String> firstCell, List<String> secondCell) {
 
-        sheetName = Index.getName(sheetName);
 
         // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
         HSSFSheet sheet = wb.createSheet(sheetName);
