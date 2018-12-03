@@ -6,10 +6,10 @@ import java.util.List;
 
 public enum  Index {
 
-    NEW("新增用户数", "new"),
-    ACTIVE("活跃用戶数", "active"),
-    AUTHENTICATING("提交认证用户数", "authenticating"),
-    AUTHENTICATED("认证通过用户数", "authenticated");
+    NEW("人数", "people"),
+    ACTIVE("次数", "times"),
+    AUTHENTICATING("人均次数", "avgtimes"),
+    AUTHENTICATED("活跃比", "active");
 
     private String name;
     private String index;

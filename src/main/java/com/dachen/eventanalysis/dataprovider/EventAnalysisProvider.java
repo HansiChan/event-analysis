@@ -63,19 +63,24 @@ public class EventAnalysisProvider {
         String sqlFilter = "";
         String sql = "";
         String sqlIndex = "";
-        String[] subList = {""};
+        String[] subList = {event};
         String dateSql = dimension_date + "s";
+        String dimensionFilter ="if(" + dimension + " is null,\"未知\"," + dimension + ")";
         String tableJoin = "select * from dw.dw_full_point";
 
         if (!"".equals(filter_condition) && filter_condition != null) {
             sqlFilter = sqlFilter + filter_condition.replace("where", "and (") + ") ";
         }
 
-        if (dimension != null || !"".equals(dimension)) {
+        if (null != dimension && !"".equals(dimension)) {
             subLength = AnalysisCommonUtils.filter(dimension).toString().split(",").length;
             subList = AnalysisCommonUtils.filter(dimension).toString().replace("[", "")
                     .replace("]", "").replace(" ", "").split(",");
+        } else {
+            dimensionFilter = "'" + event + "'";
         }
+
+
 
         if ("people".equals(index)) {
             sqlIndex = "count(distinct(userid))";
@@ -86,17 +91,17 @@ public class EventAnalysisProvider {
         }
 
         if ("active".equals(index)) {
-            String tableA = "select " + dateSql + " as dt,if(" + dimension + " is null,\"未知\"," + dimension + ") as name,"
+            String tableA = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + "count(distinct(userid)) as value from dw.dw_full_point as t where if(t.page='',t.module,concat('[',t.page,']',t.module)) = '" + event
                     + "' and days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
 
-            String tableB = "select " + dateSql + " as dt,if(" + dimension + " is null,\"未知\"," + dimension + ") as name,"
+            String tableB = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + "count(distinct(userid)) as value from dw.dw_user_login where days >='" + begin_date + "' and days <='"
                     + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
             sql = "select a.dt,a.name,a.value/b.value as value from (" + tableA + ") as a join (" + tableB + ") as b on a.dt=b.dt and a.name=b.name "
                     + "group by dt,name,a.value,b.value order by value desc";
         } else {
-            sql = "with t as (" + tableJoin + ") select " + dateSql + " as dt,if(" + dimension + " is null,\"未知\"," + dimension + ") as name,"
+            sql = "with t as (" + tableJoin + ") select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + sqlIndex + " as value from t where if(t.page='',t.module,concat('[',t.page,']',t.module)) = '" + event
                     + "' and days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
         }
@@ -141,7 +146,7 @@ public class EventAnalysisProvider {
         for (Map.Entry<String, List> entry : dt2Name.entrySet()) {
             if (entry.getValue().size() <= subLength) {
                 List<String> nameList = new ArrayList<>();
-                if (dimension != null || !"".equals(dimension)) {
+                if (dimension != null && !"".equals(dimension)) {
                     for (String sub : subList) {
                         if (!entry.getValue().contains(sub.trim())) {
                             nameList.add(sub.trim());
@@ -169,7 +174,7 @@ public class EventAnalysisProvider {
                     for (String sub : subList) {
                         AnalysisVo vo2 = new AnalysisVo();
                         vo2.setDt(day);
-                        if (null == dimension || "".equals(dimension)) {
+                        if (null == dimension && "".equals(dimension)) {
                             vo2.setName(event);
                         } else {
                             vo2.setName(sub.trim());
