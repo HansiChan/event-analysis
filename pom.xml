@@ -172,6 +172,8 @@
 			</plugin>
 
 		</plugins>
+
+		<finalName>event-analysis</finalName>
 	</build>
 
 </project>
