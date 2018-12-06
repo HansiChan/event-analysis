@@ -30,18 +30,13 @@ public class EventAnalysisProvider {
 //    ImpalaUtil conn;
 
     public List<String> getEvents() throws Exception {
-        String sql = "select distinct if(page is null,'',page) page,REPLACE(concat_ws('-',name,if(matchkey is null or matchkey='','-',matchkey)),'--','') as module " +
-                "from kudu_db.ods_full_point where name is not null and name<>'' and appname='com.dachen.medicalcircle' order by page";
+        String sql = "select distinct module from dw.dw_full_point";
         List<String> event = new LinkedList<>();
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
              ResultSet rs = stat.executeQuery(sql)) {
             while (rs.next()) {
-                if ("".equals(rs.getString(1))) {
-                    event.add(rs.getString(2));
-                } else {
-                    event.add("[" + rs.getString(1) + "]" + rs.getString(2));
-                }
+                event.add(rs.getString(1));
             }
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
@@ -92,7 +87,7 @@ public class EventAnalysisProvider {
 
         if ("active".equals(index)) {
             String tableA = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + "count(distinct(userid)) as value from dw.dw_full_point as t where if(t.page='',t.module,concat('[',t.page,']',t.module)) = '" + event
+                    + "count(distinct(userid)) as value from dw.dw_full_point as t where t.module = '" + event
                     + "' and days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
 
             String tableB = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
@@ -102,7 +97,7 @@ public class EventAnalysisProvider {
                     + "group by dt,name,a.value,b.value order by value desc";
         } else {
             sql = "with t as (" + tableJoin + ") select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + sqlIndex + " as value from t where if(t.page='',t.module,concat('[',t.page,']',t.module)) = '" + event
+                    + sqlIndex + " as value from t where t.module = '" + event
                     + "' and days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
         }
 
