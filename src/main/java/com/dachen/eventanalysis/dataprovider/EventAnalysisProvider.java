@@ -30,7 +30,7 @@ public class EventAnalysisProvider {
 //    ImpalaUtil conn;
 
     public List<String> getEvents() throws Exception {
-        String sql = "select distinct module from dw.dw_full_point";
+        String sql = "select distinct module from dw.dw_full_point where module is not null and trim(module)<>'' and module<>='null' ";
         List<String> event = new LinkedList<>();
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
