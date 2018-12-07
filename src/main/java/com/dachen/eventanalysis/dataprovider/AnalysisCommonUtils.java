@@ -202,10 +202,10 @@ public class AnalysisCommonUtils {
         });
     }
 
-    public static String formatNumber(double value) {
+    public static String formatNumber(double value,int precision) {
 
         NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setMaximumFractionDigits(2);
+        nf.setMaximumFractionDigits(precision);
         /*
          * setMinimumFractionDigits设置成2
          *
@@ -213,7 +213,7 @@ public class AnalysisCommonUtils {
          *
          * 而不是100.00
          */
-        nf.setMinimumFractionDigits(2);
+        nf.setMinimumFractionDigits(precision);
         nf.setRoundingMode(RoundingMode.HALF_UP);
         /*
          * 如果想输出的格式用逗号隔开，可以设置成true

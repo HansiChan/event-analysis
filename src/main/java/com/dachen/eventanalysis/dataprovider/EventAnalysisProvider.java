@@ -119,8 +119,10 @@ public class EventAnalysisProvider {
                 AnalysisVo vo = new AnalysisVo();
                 vo.setDt(rs.getString(1));
                 vo.setName(rs.getString(2).trim());
-                if ("avgtimes".equals(index) || "active".equals(index)) {
-                    vo.setValue(AnalysisCommonUtils.formatNumber(rs.getFloat(3)));
+                if ("avgtimes".equals(index)) {
+                    vo.setValue(AnalysisCommonUtils.formatNumber(rs.getFloat(3),2));
+                } else if ("active".equals(index)) {
+                    vo.setValue(AnalysisCommonUtils.formatNumber(rs.getFloat(3),4));
                 } else {
                     vo.setValue(rs.getString(3));
                 }
@@ -149,15 +151,17 @@ public class EventAnalysisProvider {
                     }
                 }
                 for (String xx : nameList) {
-                    AnalysisVo vo2 = new AnalysisVo();
-                    vo2.setDt(entry.getKey());
-                    vo2.setName(xx.trim());
-                    if ("avgtimes".equals(index) || "active".equals(index)) {
-                        vo2.setValue("0.00");
+                    AnalysisVo vo = new AnalysisVo();
+                    vo.setDt(entry.getKey());
+                    vo.setName(xx.trim());
+                    if ("avgtimes".equals(index)) {
+                        vo.setValue("0.00");
+                    } else if ("active".equals(index)) {
+                        vo.setValue("0.0000");
                     } else {
-                        vo2.setValue("0");
+                        vo.setValue("0");
                     }
-                    voList.add(vo2);
+                    voList.add(vo);
                 }
             }
         }
@@ -174,8 +178,10 @@ public class EventAnalysisProvider {
                         } else {
                             vo2.setName(sub.trim());
                         }
-                        if ("avgtimes".equals(index) || "active".equals(index)) {
+                        if ("avgtimes".equals(index)) {
                             vo2.setValue("0.00");
+                        } else if ("active".equals(index)) {
+                            vo2.setValue("0.0000");
                         } else {
                             vo2.setValue("0");
                         }
