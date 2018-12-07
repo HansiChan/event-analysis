@@ -140,6 +140,16 @@ public class EventAnalysisProvider {
         }
 
         Map<String, List> dt2Name = AnalysisCommonUtils.mapCombine(dtNameList);
+        if (sqlFilter.contains(dimension)) {
+            int nameListSize = 0;
+            for (Map.Entry<String, List> entry : dt2Name.entrySet()) {
+                if (entry.getValue().size() > nameListSize) {
+                    nameListSize = entry.getValue().size();
+                    subList = (String[]) entry.getValue().toArray(new String[entry.getValue().size()]);
+                    subLength = subList.length;
+                }
+            }
+        }
         for (Map.Entry<String, List> entry : dt2Name.entrySet()) {
             if (entry.getValue().size() <= subLength) {
                 List<String> nameList = new ArrayList<>();
