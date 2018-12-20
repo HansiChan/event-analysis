@@ -60,7 +60,7 @@ public class EventAnalysisProvider {
         String sqlIndex = "";
         String[] subList = {event};
         String dateSql = dimension_date + "s";
-        String dimensionFilter ="if(" + dimension + " is null,\"未知\"," + dimension + ")";
+        String dimensionFilter ="if(" + dimension + " is null or " + dimension + "='' or " + dimension + "='NULL',\"未知\"," + dimension + ")";
         String tableJoin = "select * from dw.dw_full_point";
 
         if (!"".equals(filter_condition) && filter_condition != null) {
