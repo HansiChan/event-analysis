@@ -140,30 +140,22 @@ public class EventAnalysisProvider {
         }
 
         Map<String, List> dt2Name = AnalysisCommonUtils.mapCombine(dtNameList);
-        if (sqlFilter.contains(dimension)) {
-            List nameList = new LinkedList();
-            for (Map.Entry<String, List> entry : dt2Name.entrySet()) {
-                for(Object value : entry.getValue()){
-                    if(!nameList.contains(value)){
-                        nameList.add(value);
+        if (dimension != null && !"".equals(dimension)) {
+            if (sqlFilter.contains(dimension)) {
+                List nameList = new LinkedList();
+                for (Map.Entry<String, List> entry : dt2Name.entrySet()) {
+                    for (Object value : entry.getValue()) {
+                        if (!nameList.contains(value)) {
+                            nameList.add(value);
+                        }
                     }
-                }
-                subList = (String[]) nameList.toArray(new String[nameList.size()]);
-                subLength = subList.length;
+                    subList = (String[]) nameList.toArray(new String[nameList.size()]);
+                    subLength = subList.length;
                 /*if (entry.getValue().size() > nameListSize) {
                     nameListSize = entry.getValue().size();
                     subString = (String[]) entry.getValue().toArray(new String[entry.getValue().size()]);
                     subLength = subString.length;
                 }*/
-            }
-        }
-        if (sqlFilter.contains(dimension)) {
-            int nameListSize = 0;
-            for (Map.Entry<String, List> entry : dt2Name.entrySet()) {
-                if (entry.getValue().size() > nameListSize) {
-                    nameListSize = entry.getValue().size();
-                    subList = (String[]) entry.getValue().toArray(new String[entry.getValue().size()]);
-                    subLength = subList.length;
                 }
             }
         }
