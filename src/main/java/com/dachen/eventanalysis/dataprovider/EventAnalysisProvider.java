@@ -32,6 +32,7 @@ public class EventAnalysisProvider {
     public List<String> getEvents() throws Exception {
         String sql = "select distinct module from dw.dw_full_point where module is not null and trim(module)<>'' and module<>'null' ";
         List<String> event = new LinkedList<>();
+        event.add("全部事件");
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
              ResultSet rs = stat.executeQuery(sql)) {
