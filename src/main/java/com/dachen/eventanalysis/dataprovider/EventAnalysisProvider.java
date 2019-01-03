@@ -61,7 +61,10 @@ public class EventAnalysisProvider {
         String[] subList = {event};
         String dateSql = dimension_date + "s";
         String dimensionFilter ="if(" + dimension + " is null or " + dimension + "='' or " + dimension + "='NULL',\"未知\"," + dimension + ")";
-        String tableJoin = "select * from dw.dw_full_point";
+        String moduleFilter = " t.module= '" + event +"' and ";
+        if("全部事件".equals(event)){
+            moduleFilter ="";
+        }
 
         if (!"".equals(filter_condition) && filter_condition != null) {
             sqlFilter = sqlFilter + filter_condition.replace("where", "and (") + ") ";
@@ -87,8 +90,8 @@ public class EventAnalysisProvider {
 
         if ("active".equals(index)) {
             String tableA = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + "count(distinct(userid)) as value from dw.dw_full_point as t where t.module = '" + event
-                    + "' and days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
+                    + "count(distinct(userid)) as value from dw.dw_full_point as t where " + moduleFilter
+                    + " days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
 
             String tableB = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + "count(distinct(userid)) as value from dw.dw_user_login where days >='" + begin_date + "' and days <='"
@@ -96,9 +99,9 @@ public class EventAnalysisProvider {
             sql = "select a.dt,a.name,a.value/b.value as value from (" + tableA + ") as a join (" + tableB + ") as b on a.dt=b.dt and a.name=b.name "
                     + "group by dt,name,a.value,b.value order by value desc";
         } else {
-            sql = "with t as (" + tableJoin + ") select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + sqlIndex + " as value from t where t.module = '" + event
-                    + "' and days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
+            sql = "with t as (select * from dw.dw_full_point) select " + dateSql + " as dt," + dimensionFilter + " as name,"
+                    + sqlIndex + " as value from t where " + moduleFilter
+                    + " days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
         }
 
         List<AnalysisVo> voList = new ArrayList<>();
