@@ -30,7 +30,7 @@ public class EventAnalysisProvider {
 //    ImpalaUtil conn;
 
     public List<String> getEvents() throws Exception {
-        String sql = "select distinct module from dw.dw_full_point where module is not null and trim(module)<>'' and module<>'null' ";
+        String sql = "select distinct module from dw.dw_user_event_r where module is not null and trim(module)<>'' and module<>'null' ";
         List<String> event = new LinkedList<>();
         event.add("全部事件");
         try (Connection connection = getConnection();
@@ -91,16 +91,16 @@ public class EventAnalysisProvider {
 
         if ("active".equals(index)) {
             String tableA = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + "count(distinct(userid)) as value from dw.dw_full_point as t where " + moduleFilter
+                    + "count(distinct(userid)) as value from dw.dw_user_event_r as t where " + moduleFilter
                     + " days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
 
             String tableB = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + "count(distinct(userid)) as value from dw.dw_user_login where days >='" + begin_date + "' and days <='"
+                    + "count(distinct(userid)) as value from dw.dw_user_login_r where days >='" + begin_date + "' and days <='"
                     + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
             sql = "select a.dt,a.name,a.value/b.value as value from (" + tableA + ") as a join (" + tableB + ") as b on a.dt=b.dt and a.name=b.name "
                     + "group by dt,name,a.value,b.value order by value desc";
         } else {
-            sql = "with t as (select * from dw.dw_full_point) select " + dateSql + " as dt," + dimensionFilter + " as name,"
+            sql = "with t as (select * from dw.dw_user_event_r) select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + sqlIndex + " as value from t where " + moduleFilter
                     + " days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
         }
