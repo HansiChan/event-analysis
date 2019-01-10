@@ -2,7 +2,6 @@ package com.dachen.eventanalysis.conctroller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.dachen.eventanalysis.dataprovider.CommonDataProvider;
 import com.dachen.eventanalysis.service.ExcelExportService;
 import com.dachen.eventanalysis.service.ImpalaDataService;
 import com.dachen.util.JSONMessage;
@@ -23,37 +22,6 @@ public class EventAnalysisController {
 
     @Autowired
     private ExcelExportService excelService;
-
-    @Autowired
-    private CommonDataProvider commonProvider;
-
-    @RequestMapping("/selector")
-    public JSONMessage events() throws Exception {
-
-        List<Map<String, String>> list = new ArrayList<>();
-        List<String> eList = new ArrayList<>();
-
-        eList.addAll(dataService.getEvents());
-        for (int i = 0; i < eList.size(); i++) {
-            Map<String, String> eMap = new LinkedHashMap<>();
-            eMap.put("event", eList.get(i));
-            list.add(eMap);
-        }
-
-        return JSONMessage.success("Request success", list);
-    }
-
-    @RequestMapping("/dimensions")
-    public JSONMessage dimension(@RequestParam(name = "module", required = false) String module) throws Exception {
-        Object list  = commonProvider.getDimensions(module);
-        return JSONMessage.success("Request success", list);
-    }
-
-    @RequestMapping("/filter")
-    public JSONMessage filter(@RequestParam(name = "dimension", required = false) String dimension) throws Exception {
-        Object res = dataService.filter(dimension);
-        return JSONMessage.success("Request success", res);
-    }
 
     @RequestMapping("/query")
     public JSONMessage query(@RequestParam(name = "event") String event,

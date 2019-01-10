@@ -29,22 +29,6 @@ public class EventAnalysisProvider {
 //    @Autowired
 //    ImpalaUtil conn;
 
-    public List<String> getEvents() throws Exception {
-        String sql = "select distinct module from dw.dw_user_event_r where module is not null and trim(module)<>'' and module<>'null' ";
-        List<String> event = new LinkedList<>();
-        event.add("全部事件");
-        try (Connection connection = getConnection();
-             Statement stat = connection.createStatement();
-             ResultSet rs = stat.executeQuery(sql)) {
-            while (rs.next()) {
-                event.add(rs.getString(1));
-            }
-        } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
-        }
-        return event;
-    }
-
     public Object eventAnalysis(String event, String index, String dimension, String filter_condition,
                                 String dimension_date, String begin_date, String end_date) throws Exception {
 
@@ -72,9 +56,8 @@ public class EventAnalysisProvider {
         }
 
         if (null != dimension && !"".equals(dimension)) {
-            subLength = AnalysisCommonUtils.filter(dimension).toString().split(",").length;
-            subList = AnalysisCommonUtils.filter(dimension).toString().replace("[", "")
-                    .replace("]", "").replace(" ", "").split(",");
+            subLength = AnalysisCommonUtils.filter(dimension).size();
+            subList = AnalysisCommonUtils.filter(dimension).toArray(new String[AnalysisCommonUtils.filter(dimension).size()]);
         } else {
             dimensionFilter = "'" + event + "'";
         }
