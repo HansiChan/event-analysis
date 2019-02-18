@@ -6,6 +6,7 @@ import com.dachen.eventanalysis.pojo.AnalysisVo;
 import com.dachen.util.ImpalaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -14,20 +15,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-import static com.dachen.util.ImpalaUtil.getConnection;
-
-
 @Repository
 public class EventAnalysisProvider {
 
     Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-    Connection conn = null;
-    Statement stat = null;
-    ResultSet rs = null;
+    @Autowired
+    ImpalaUtil impalaUtil;
+    @Autowired
+    AnalysisCommonUtils analysisCommonUtils;
 
-//    @Autowired
-//    ImpalaUtil conn;
 
     public Object eventAnalysis(String event, String index, String dimension, String filter_condition,
                                 String dimension_date, String begin_date, String end_date) throws Exception {
@@ -56,8 +53,8 @@ public class EventAnalysisProvider {
         }
 
         if (null != dimension && !"".equals(dimension)) {
-            subLength = AnalysisCommonUtils.filter(dimension).size();
-            subList = AnalysisCommonUtils.filter(dimension).toArray(new String[AnalysisCommonUtils.filter(dimension).size()]);
+            subLength = analysisCommonUtils.filter(dimension).size();
+            subList = analysisCommonUtils.filter(dimension).toArray(new String[analysisCommonUtils.filter(dimension).size()]);
         } else {
             dimensionFilter = "'" + event + "'";
         }
@@ -92,9 +89,12 @@ public class EventAnalysisProvider {
         List<Map> dtNameList = new ArrayList<>();
         Set<String> dtSet = new HashSet<>();
 
+        Connection conn = null;
+        Statement stat = null;
+        ResultSet rs = null;
         try {
             LOG.info(sql);
-            conn = ImpalaUtil.getConnection();
+            conn = impalaUtil.getConnection();
             stat = conn.createStatement();
             rs = stat.executeQuery(sql);
             while (rs.next()) {
