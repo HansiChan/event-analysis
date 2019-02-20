@@ -173,7 +173,7 @@ public class EventAnalysisProvider {
         }
 
         List<String> fullDateList = AnalysisCommonUtils.dateSplit(begin_date, end_date, dateSql);
-        if (voList.size() < daysLen * subLength) {
+        if (voList.size() <= daysLen * subLength) {
             for (String day : fullDateList) {
                 if (!dtSet.contains(day)) {
                     for (String sub : subList) {
