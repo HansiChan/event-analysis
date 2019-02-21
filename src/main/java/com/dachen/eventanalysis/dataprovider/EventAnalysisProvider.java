@@ -42,7 +42,8 @@ public class EventAnalysisProvider {
         String sqlIndex = "";
         String[] subList = {event};
         String dateSql = dimension_date + "s";
-        String dimensionFilter ="if(" + dimension + " is null or " + dimension + "='' or " + dimension + "='NULL',\"未知\"," + dimension + ")";
+        String dimensionFilter ="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知'),\"其他\"," + dimension + ")";
+        if("ifcard".equals(dimension)){dimensionFilter="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知'),\"无\"," + dimension + ")";}
         String moduleFilter = " t.module= '" + event +"' and ";
         if("全部事件".equals(event)){
             moduleFilter ="";
