@@ -48,9 +48,12 @@ public class EventAnalysisProvider {
         if("全部事件".equals(event)){
             moduleFilter ="";
         }
-
         if (!"".equals(filter_condition) && filter_condition != null) {
             sqlFilter = sqlFilter + filter_condition.replace("where", "and (") + ") ";
+            if(filter_condition.contains("其他")){
+                String x =filter_condition.split(" ")[2];
+                sqlFilter = sqlFilter + "and " + x + " in ('','NULL') or " + x + " is null ";
+            }
         }
 
         if (null != dimension && !"".equals(dimension)) {
