@@ -45,6 +45,7 @@ public class EventAnalysisProvider {
         String dimensionFilter ="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知'),\"其他\"," + dimension + ")";
         if("ifcard".equals(dimension)){dimensionFilter="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知'),\"无\"," + dimension + ")";}
         String moduleFilter = " t.module= '" + event +"' and ";
+        String timeZone = " days >='" + begin_date + "' and days <='" + end_date + "' ";
         if("全部事件".equals(event)){
             moduleFilter ="";
         }
@@ -52,7 +53,7 @@ public class EventAnalysisProvider {
             sqlFilter = sqlFilter + filter_condition.replace("where", "and");
             if(filter_condition.contains("其他")){
                 String x =filter_condition.split(" ")[1];
-                sqlFilter = filter_condition.replace("where", "and").replace("'其他'","'','NULL'") + " or " + x + " is null ";
+                sqlFilter = filter_condition.replace("where", "and").replace("'其他'","'','NULL'") + " or " + x + " is null  and" + timeZone;
             }
         }
 
@@ -76,17 +77,17 @@ public class EventAnalysisProvider {
         if ("active".equals(index)) {
             String tableA = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + "count(distinct(userid)) as value from dw.dw_user_event_r as t where " + moduleFilter
-                    + " days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
+                    + timeZone + sqlFilter + " group by dt,name order by value desc";
 
             String tableB = "select " + dateSql + " as dt," + dimensionFilter + " as name,"
-                    + "count(distinct(userid)) as value from dw.dw_user_login_r where days >='" + begin_date + "' and days <='"
-                    + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
+                    + "count(distinct(userid)) as value from dw.dw_user_login_r where" + timeZone
+                    + sqlFilter + " group by dt,name order by value desc";
             sql = "select a.dt,a.name,a.value/b.value as value from (" + tableA + ") as a join (" + tableB + ") as b on a.dt=b.dt and a.name=b.name "
                     + "group by dt,name,a.value,b.value order by value desc";
         } else {
             sql = "with t as (select * from dw.dw_user_event_r) select " + dateSql + " as dt," + dimensionFilter + " as name,"
                     + sqlIndex + " as value from t where " + moduleFilter
-                    + " days >='" + begin_date + "' and days <='" + end_date + "' " + sqlFilter + " group by dt,name order by value desc";
+                    + timeZone + sqlFilter + " group by dt,name order by value desc";
         }
 
         List<AnalysisVo> voList = new ArrayList<>();
