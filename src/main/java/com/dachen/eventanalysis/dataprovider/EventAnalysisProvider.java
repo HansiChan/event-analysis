@@ -49,10 +49,10 @@ public class EventAnalysisProvider {
             moduleFilter ="";
         }
         if (!"".equals(filter_condition) && filter_condition != null) {
-            sqlFilter = sqlFilter + filter_condition.replace("where", "and (") + ") ";
+            sqlFilter = sqlFilter + filter_condition.replace("where", "and");
             if(filter_condition.contains("其他")){
                 String x =filter_condition.split(" ")[1];
-                sqlFilter = sqlFilter + "and " + x + " in ('','NULL') or " + x + " is null ";
+                sqlFilter = filter_condition.replace("where", "and").replace("'其他'","'','NULL'") + " or " + x + " is null ";
             }
         }
 
