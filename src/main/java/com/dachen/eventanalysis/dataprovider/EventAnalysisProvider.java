@@ -43,7 +43,7 @@ public class EventAnalysisProvider {
         String[] subList = {event};
         String dateSql = dimension_date + "s";
         String dimensionFilter ="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知'),\"其他\"," + dimension + ")";
-        if("ifcard".equals(dimension)){dimensionFilter="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知'),\"无\"," + dimension + ")";}
+        if("ifcard".equals(dimension)){dimensionFilter="if(" + dimension + " is null or " + dimension + "='' or " + dimension + " in ('NULL','未知',''),\"无\"," + dimension + ")";}
         String moduleFilter = " t.module= '" + event +"' and ";
         String timeZone = " days >='" + begin_date + "' and days <='" + end_date + "' ";
         if("全部事件".equals(event)){
